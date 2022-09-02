@@ -1,0 +1,12 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/rauno99/frontend.git
+[submodule "resultsAPI"]
+	path = resultsAPI
+	url = https://github.com/rauno99/resultsAPI.git
+[submodule "VotingAPI"]
+	path = VotingAPI
+	url = https://github.com/rauno99/VotingAPI.git
+[submodule "worker"]
+	path = worker
+	url = https://github.com/rauno99/worker.git

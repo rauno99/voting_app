@@ -1,0 +1,63 @@
+version: '3'
+services:
+  db:
+    image: postgres:10.22-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: votingapp
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  votingapi:
+    build: VotingAPI/
+    ports:
+      - 8080:8080
+    depends_on:
+      - rabbitmq
+    environment:
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
+      - spring.rabbitmq.username=guest
+      - spring.rabbitmq.password=guest
+
+  worker:
+    build: worker/
+    ports:
+      - 8081:8081
+    depends_on:
+      - db
+      - rabbitmq
+    environment:
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
+      - spring.rabbitmq.username=guest
+      - spring.rabbitmq.password=guest
+      - spring.datasource.url=jdbc:postgresql://db:5432/votingapp
+      - spring.datasource.username=postgres
+      - spring.datasource.password=postgres
+
+  resultsapi:
+    build: resultsAPI/
+    ports:
+      - 8082:8082
+    depends_on:
+      - db
+    environment:
+      - spring.datasource.url=jdbc:postgresql://db:5432/votingapp
+      - spring.datasource.username=postgres
+      - spring.datasource.password=postgres
+      - spring.flyway.url=jdbc:postgresql://db:5432/votingapp
+      - spring.flyway.user=postgres
+      - spring.flyway.password=postgres
+
+  frontend:
+    build: frontend/
+    ports:
+      - 3000:3000
